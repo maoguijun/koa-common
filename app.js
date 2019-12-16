@@ -1,44 +1,62 @@
-const Koa = require('koa')
-const app = new Koa()
-const views = require('koa-views')
-const json = require('koa-json')
-const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
-const logger = require('koa-logger')
-
-const index = require('./routes/index')
-const users = require('./routes/users')
+const Koa = require("koa");
+const app = new Koa();
+const views = require("koa-views");
+const json = require("koa-json");
+const onerror = require("koa-onerror");
+const bodyparser = require("koa-bodyparser");
+const logger = require("koa-logger");
+const static = require("koa-static");
+const path = require("path");
+const models = require("./models");
+const router = require("./routes/index");
+const session = require("./middleware/session/index");
 
 // error handler
-onerror(app)
+onerror(app);
 
 // middlewares
-app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
-}))
-app.use(json())
-app.use(logger())
-app.use(require('koa-static')(__dirname + '/public'))
+app.use(
+    bodyparser({
+        enableTypes: ["json", "form", "text"]
+    })
+);
+app.use(json());
+app.use(logger());
+app.use(require("koa-static")(__dirname + "/public"));
 
-app.use(views(__dirname + '/views', {
-  extension: 'pug'
-}))
+app.use(
+    views(__dirname + "/views", {
+        extension: "pug"
+    })
+);
 
 // logger
 app.use(async (ctx, next) => {
-  const start = new Date()
-  await next()
-  const ms = new Date() - start
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
-})
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+});
+// session
+app.use(session);
+
+// 数据库
+(async () => {
+    await models.sequelize.sync();
+    console.log("数据库连接成功!\n");
+})().catch(err => console.error("数据库连接失败:", err));
+
+// 静态资源目录对于相对入口文件index.js的路径
+const staticPath = "./static";
+
+app.use(static(path.join(__dirname, staticPath)));
 
 // routes
-app.use(index.routes(), index.allowedMethods())
-app.use(users.routes(), users.allowedMethods())
+app.use(router.routes()).use(router.allowedMethods());
 
 // error-handling
-app.on('error', (err, ctx) => {
-  console.error('server error', err, ctx)
+app.on("error", (err, ctx) => {
+    console.error("server error", err, ctx);
 });
 
-module.exports = app
+module.exports = app;

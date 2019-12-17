@@ -76,10 +76,9 @@ function uploadFile(ctx, options) {
 
             // 文件写入事件结束
             file.on("end", function() {
-                result.success = true;
-                result.message = "文件上传成功";
-                result.data = {
-                    pictureUrl: `//${ctx.host}/image/${fileType}/${fileName}`
+
+                result = {
+                    pictureUrl: `//${ctx.host}/${options.dataString}/${fileType}/${fileName}`
                 };
                 console.log("文件上传成功！");
                 resolve(result);

@@ -1,3 +1,10 @@
+/*
+ * @Author: maoguijun
+ * @Date: 2019-12-17 13:09:29
+ * @LastEditors  : maoguijun
+ * @LastEditTime : 2019-12-18 20:54:03
+ * @FilePath: \koa-common\app.js
+ */
 const Koa = require("koa");
 const app = new Koa();
 const views = require("koa-views");
@@ -10,6 +17,7 @@ const path = require("path");
 const models = require("./models");
 const router = require("./routes/index");
 const session = require("./middleware/session/index");
+const authority = require("./middleware/authority/index");
 
 // error handler
 onerror(app);
@@ -17,7 +25,7 @@ onerror(app);
 // middlewares
 app.use(
     bodyparser({
-        enableTypes: ["json", "form", "text"]
+        enableTypes: ["json", "form", "text"],
     })
 );
 app.use(json());
@@ -26,7 +34,7 @@ app.use(require("koa-static")(__dirname + "/public"));
 
 app.use(
     views(__dirname + "/views", {
-        extension: "pug"
+        extension: "pug",
     })
 );
 
@@ -48,6 +56,13 @@ app.use(session);
 
 // 静态资源目录对于相对入口文件index.js的路径
 const staticPath = "./static";
+
+//
+app.use(
+    authority({
+        whiteList: ["/users/login", "/book/list"],
+    })
+);
 
 app.use(static(path.join(__dirname, staticPath)));
 

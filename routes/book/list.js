@@ -1,15 +1,14 @@
 /*
  * @Author: maoguijun
  * @Date: 2019-12-17 13:40:20
- * @LastEditors: maoguijun
- * @LastEditTime: 2019-12-17 18:28:16
+ * @LastEditors  : maoguijun
+ * @LastEditTime : 2019-12-18 21:18:33
  * @FilePath: \koa-common\routes\users\login.js
  */
 
 const { models } = require("../../models");
 const uuidv4 = require("uuid/v4");
-const { resSuccess, resFaild, queryObject } = require("../../utils/format-res");
-const { notLogin } = require("../../utils/authority");
+const { resSuccess, resError, queryObject } = require("../../utils/format-res");
 const { get } = require("lodash");
 const queryString = require("querystring");
 

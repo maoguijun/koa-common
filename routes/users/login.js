@@ -8,7 +8,7 @@
 
 const { models } = require("../../models");
 const uuidv4 = require("uuid/v4");
-const { resSuccess, resFaild, queryObject } = require("../../utils/format-res");
+const { resSuccess, resError, queryObject } = require("../../utils/format-res");
 const { get } = require("lodash");
 
 module.exports = async function(ctx, next) {
@@ -20,7 +20,7 @@ module.exports = async function(ctx, next) {
     }
   });
   if (!get(has, "length")) {
-    ctx.body = resFaild("输入的邮箱或者密码错误!");
+    ctx.body = resError("输入的邮箱或者密码错误!");
     return;
   }
 

@@ -19,4 +19,12 @@ module.exports = {
         code: 1002,
         message: "登录已过期",
     },
+    registered: {
+        code: 1003,
+        message: "邮箱已经注册过",
+    },
+    loginError: {
+        code: 1004,
+        message: "账号或密码错误",
+    },
 };

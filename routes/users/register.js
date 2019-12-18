@@ -6,23 +6,27 @@
  * @FilePath: \koa-common\routes\users\register.js
  */
 const { models } = require("../../models");
-const uuidv4 = require("uuid/v4");
 const { resSuccess, resError, queryObject } = require("../../utils/format-res");
 const { get } = require("lodash");
+const code = require("../../utils/code");
+const { sha256 } = require("../../utils/common");
 
 module.exports = async function(ctx, next) {
-  const has = await models.account.findAll({
-    limit: 1,
-    where: {
-      mail: get(ctx, "request.body.mail")
+    const has = await models.account.findAll({
+        limit: 1,
+        where: {
+            mail: get(ctx, "request.body.mail"),
+        },
+    });
+    if (get(has, "length")) {
+        ctx.body = resError(code.registered);
+        return;
     }
-  });
-  if (get(has, "length")) {
-    ctx.body = resError("该邮箱已经注册了");
-    return;
-  }
+    const data = {
+        ...get(ctx, "request.body"),
+        password: sha256(get(ctx, "request.body.password")),
+    };
+    const result = await models.account.create(data);
 
-  const result = await models.account.create(get(ctx, "request.body"));
-
-  ctx.body = resSuccess(queryObject(get(result, "dataValues"), ["password"]));
+    ctx.body = resSuccess(queryObject(get(result, "dataValues"), ["password"]));
 };

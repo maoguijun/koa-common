@@ -10,27 +10,29 @@ const { models } = require("../../models");
 const uuidv4 = require("uuid/v4");
 const { resSuccess, resError, queryObject } = require("../../utils/format-res");
 const { get } = require("lodash");
+const { sha256 } = require("../../utils/common");
+const code = require("../../utils/code");
 
 module.exports = async function(ctx, next) {
-  const has = await models.account.findAll({
-    limit: 1,
-    where: {
-      mail: get(ctx, "request.body.mail"),
-      password: get(ctx, "request.body.password")
+    const has = await models.account.findAll({
+        limit: 1,
+        where: {
+            mail: get(ctx, "request.body.mail"),
+            password: sha256(get(ctx, "request.body.password")),
+        },
+    });
+    if (!get(has, "length")) {
+        ctx.body = resError(code.loginError);
+        return;
     }
-  });
-  if (!get(has, "length")) {
-    ctx.body = resError("输入的邮箱或者密码错误!");
-    return;
-  }
 
-  // session
-  let session = get(ctx, "session");
-  const userResult = get(has, ["0", "dataValues"]);
+    // session
+    let session = get(ctx, "session");
+    const userResult = get(has, ["0", "dataValues"]);
 
-  session.isLogin = true;
-  session.mail = userResult.mail;
-  session.userId = userResult.id;
+    session.isLogin = true;
+    session.mail = userResult.mail;
+    session.userId = userResult.id;
 
-  ctx.body = resSuccess(queryObject(userResult, ["password"]));
+    ctx.body = resSuccess(queryObject(userResult, ["password"]));
 };

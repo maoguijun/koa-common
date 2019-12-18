@@ -13,11 +13,11 @@ const { get } = require("lodash");
  * @param {*} config
  */
 const authority = config => {
-    const whiteList = get(config, "whiteList") || [];
+    const exclude = get(config, "exclude");
     return async (ctx, next) => {
         let session = get(ctx, "session");
         const path = get(ctx, "path");
-        if (whiteList.includes(path)) {
+        if (exclude && exclude.test(path)) {
             await next();
             return;
         }

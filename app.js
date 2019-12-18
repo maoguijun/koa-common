@@ -38,13 +38,6 @@ app.use(
     })
 );
 
-// logger
-app.use(async (ctx, next) => {
-    const start = new Date();
-    await next();
-    const ms = new Date() - start;
-    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
-});
 // session
 app.use(session);
 
@@ -60,9 +53,17 @@ const staticPath = "./static";
 //
 app.use(
     authority({
-        whiteList: ["/users/login", "/book/list"],
+        exclude: /(^\/users(\/|\\))|(^\/book(\/|\\)(list|index))/,
     })
 );
+
+// logger
+app.use(async (ctx, next) => {
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+});
 
 app.use(static(path.join(__dirname, staticPath)));
 

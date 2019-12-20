@@ -2,7 +2,7 @@
  * @Author: maoguijun
  * @Date: 2019-12-17 13:09:29
  * @LastEditors  : maoguijun
- * @LastEditTime : 2019-12-18 20:54:03
+ * @LastEditTime : 2019-12-20 15:29:28
  * @FilePath: \koa-common\app.js
  */
 const Koa = require("koa");
@@ -11,6 +11,7 @@ const views = require("koa-views");
 const json = require("koa-json");
 const onerror = require("koa-onerror");
 const bodyparser = require("koa-bodyparser");
+const koaBody = require("koa-body");
 const logger = require("koa-logger");
 const static = require("koa-static");
 const path = require("path");
@@ -24,10 +25,20 @@ onerror(app);
 
 // middlewares
 app.use(
+    koaBody({
+        multipart: true,
+        formidable: {
+            maxFileSize: 200 * 1024 * 1024, // 设置上传文件大小最大限制，默认2M
+        },
+    })
+);
+
+app.use(
     bodyparser({
         enableTypes: ["json", "form", "text"],
     })
 );
+
 app.use(json());
 app.use(logger());
 app.use(require("koa-static")(__dirname + "/public"));

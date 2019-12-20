@@ -2,7 +2,7 @@
  * @Author: maoguijun
  * @Date: 2019-12-18 20:44:48
  * @LastEditors  : maoguijun
- * @LastEditTime : 2019-12-18 20:45:16
+ * @LastEditTime : 2019-12-20 15:22:10
  * @FilePath: \koa-common\utils\code.js
  */
 module.exports = {
@@ -26,5 +26,9 @@ module.exports = {
     loginError: {
         code: 1004,
         message: "账号或密码错误",
+    },
+    uploadError: {
+        code: 1005,
+        message: "上传失败",
     },
 };
